@@ -20,7 +20,58 @@ class HomeController extends AbstractController
 	public function home()
 	{
 		return $this->render('home.html.twig', [
+			'validateError'=> false
 		]);
+	}
+
+	/**
+	 *  @Route("/user")
+	 */
+	public function user(Request $request)
+	{
+		$params = $request->query->all();
+		$userStore = new UserStore();
+
+		$userDetails = $userStore->getDetailsForUserId($params['userid']);
+
+
+
+
+		return $this->render('user.html.twig', [
+			'firstName' => $userDetails['FIRST_NAME'],
+			'lastName' => $userDetails['LAST_NAME'],
+			'balance' => $userDetails['BALANCE'],
+			'ssn' => $userDetails['SSN'],
+			'plan' => $userDetails['PLAN_ID'],
+			'isConfirmed' => $userDetails['IS_CONFIRMED'],
+		]);
+
+	}
+
+	/**
+	 *  @Route("/login")
+	 */
+	public function login(Request $request)
+	{
+		$params = $request->request->all();
+		$tokenStore = new TokenStore();
+
+		$login['email'] = $params['email'];
+		$login['password'] = $params['password'];
+
+		$userId = $tokenStore->login($login);
+
+		if($tokenStore->login($login))
+		{
+			return $this->redirectToRoute("app_home_user", array('userid' => $userId));
+		}
+		else
+		{
+			return $this->render('home.html.twig', [
+				'validateError'=> true
+			]);
+		}
+
 	}
 
 	/**

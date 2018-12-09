@@ -23,6 +23,32 @@ class UserStore
 
 	}
 
+	public function getDetailsForUserId($userId)
+	{
+		try{
+			$stmt = $this->db->prepare("SELECT * FROM USERS WHERE USER_ID = :userId");
+
+			$stmt->bindParam(':userId', $userId);
+
+
+			if ($stmt->execute()) {
+				$row = $stmt->fetch();
+				if ($row) {
+					return $row;
+				}
+			}
+			else
+			{
+			}
+
+		} catch (PDOException $e) {
+			print "Error!: " . $e->getMessage() . "<br/>";
+			die();
+		}
+
+		return false;
+
+	}
 	public function createUser($params)
 	{
 		try {

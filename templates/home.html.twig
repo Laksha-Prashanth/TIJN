@@ -44,15 +44,20 @@
 		</div>
 		<div class="col-md-5" style="">
 
-			<form action="login.php" method="post">
+			<form action="login" method="post">
 				<label id="emailHelp" class="form-text text-muted">Existing User? Login</label>
 				<div class="form-group">
 					<label for="exampleInputEmail1">Email address</label>
-					<input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+					<input type="email" name="email" class="form-control {% if validateError %} is-invalid {% endif %}"  id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
 				</div>
 				<div class="form-group">
 					<label for="exampleInputPassword1">Password</label>
-					<input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+					<input type="password" name="password" class="form-control {% if validateError %} is-invalid {% endif %}" id="exampleInputPassword1" placeholder="Password">
+					{% if validateError %}
+					<div class="invalid-feedback">
+						Please check your login credentials
+					</div>
+					{% endif %}
 				</div>
 				<button type="submit" class="btn btn-primary">Submit</button>
 			</form>
