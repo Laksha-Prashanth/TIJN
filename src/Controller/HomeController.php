@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Store\UserStore;
 use App\Store\TokenStore;
 use App\Store\BankStore;
+use App\Store\RequestPaymentStore;
 
 
 /**
@@ -33,12 +34,18 @@ class HomeController extends AbstractController
 		$params = $request->query->all();
 		$userStore = new UserStore();
 		$bankStore = new BankStore();
+		$requestStore = new RequestPaymentStore();
 
 		$userDetails = $userStore->getDetailsForUserId($params['userid']);
 		$bankDetails = $bankStore->getDetailsforUserId($params['userid']);
+		$requestDetails = $requestStore->getRequestsForUserId($params['userid']);
 
-
-
+		for($i = 0; $i < sizeof($requestDetails); $i++)
+		{
+			$userId = $requestDetails[$i]['FROM_USERID'];
+			$firstName = $userStore->getDetailsForUserId($userId)['FIRST_NAME'];
+			$requestDetails[$i]['name'] = $firstName;
+		}
 
 		return $this->render('user.html.twig', [
 			'userId' => $userDetails['USER_ID'],
@@ -50,6 +57,7 @@ class HomeController extends AbstractController
 			'plan' => $userDetails['PLAN_ID'],
 			'isConfirmed' => $userDetails['IS_CONFIRMED'],
 			'bankAccounts' => $bankDetails,
+			'requests' => $requestDetails,
 		]);
 
 	}

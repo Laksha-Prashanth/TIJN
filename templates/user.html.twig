@@ -5,6 +5,7 @@
 	<a class="navbar-brand" href="#">
 		<img src="http://www.njit.edu//sites/all/themes/corporate2018dev/logo.svg" width="200px" height="60px" class="d-inline-block align-top" alt="">
 	</a>
+	<a class="justify-content-end" href="http://localhost/TIJN/public/index.php/home">Sign out</a>
 </nav>
 
 <div class="jumbotron jumbotron-fluid">
@@ -76,9 +77,43 @@
 			{% else %}
 			<p> You don't have any bank accounts! </p>
 			{% endif %}
+
+			{% if requests %}
+			<h4>Your Requests</h4>
+			<table class="table">
+				<tr><th>From</th><th>Amount</th><th>Memo</th><th></th></tr>
+				{% for request in requests %}
+				<tr>
+					<td>{{ request.name }}</td>
+					<td>{{ request.AMOUNT }}</td>
+					<td>{{ request.MEMO }}</td>
+					<td> 
+						<form action="user/payRequest" method="post"> 
+								<input type="text" name="requestId" class="form-control"  aria-describedby="emailHelp" style="display:none"  value="{{ request.REQUEST_ID }}">
+								<input type="text" name="toUserId" class="form-control"  aria-describedby="emailHelp" style="display:none"  value="{{ request.FROM_USERID }}">
+								<input type="text" name="amount" class="form-control" aria-describedby="emailHelp" style="display:none" value="{{ request.AMOUNT }}">
+								<input type="text" name="memo" class="form-control" aria-describedby="emailHelp" style="display:none"  value="{{ request.MEMO }}">
+								<input type="text" name="fromUserid" class="form-control" aria-describedby="emailHelp" style="display:none"  value="{{ request.TO_USERID }}">
+								<input type="text" name="fromTokenid" class="form-control" aria-describedby="emailHelp" style="display:none"  value="{{ tokenId }}">
+							<button type="submit" class="btn btn-outline-success">Pay</button>
+						</form>
+					</td>
+
+					{% endfor %}
+
+
+			</table>
+			{% endif %}
+
+
+
 		</div>
 		<div class="col-md-4">
 			<h4 style="">Your Summary</h4>
+			<form action="user/statements" method="post"> 
+				<input type="text" name="userId" class="form-control"style="display:none" value="{{ userId }}">
+				<button type="submit" class="btn btn-warning">Statements</button>
+			</form>
 			<table class="table table-borderless">
 				<tr>
 					<td> 

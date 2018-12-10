@@ -43,6 +43,39 @@ class UserController extends AbstractController
 	}
 
 	/**
+	 *  @Route("/payRequest")
+	 */
+	public function payRequest(Request $request)
+	{
+		$params = $request->request->all();
+		$requestStore = new  RequestPaymentStore();
+		$requestStore->completeRequest($params['requestId']);
+
+		return $this->transferMoney($request);
+
+	}
+
+	/**
+	 *  @Route("/statements")
+	 */
+	public function statements(Request $request)
+	{
+		$params = $request->request->all();
+		$sendPaymentStore = new SendPaymentStore();
+		$requestStore = new RequestPaymentStore();
+
+		$params['start'] = "2018-".$params['start']."-00";
+		$params['end'] = "2018-".$params['end']."-31";
+
+		$result = $sendPaymentStore->getStatementForMonth($params);
+
+		return $this->render('statement.html.twig', [
+			'statement' => $result,
+			'userId' => $params['userId'],
+		]);
+	}
+
+	/**
 	 *  @Route("/requestAction")
 	 */
 	public function requestAction(Request $request)
@@ -97,28 +130,34 @@ class UserController extends AbstractController
 		$userStore = new UserStore();
 		$tokenStore = new TokenStore();
 
-		$toUser = $tokenStore->getUserIdForEmailPhone($params['email']);
+		if(array_key_exists('toUserId', $params))
+			$toUser = $params['toUserId'];
+		else
+			$toUser = $tokenStore->getUserIdForEmailPhone($params['email'], $params['email'])['USER_ID'];
 
 		if(!$toUser)
 		{
 			//creating new user
-			$userId = $userStore->createDummyUser();
-			$newToken['userid'] = $userId;
-			if(strpos($params['email'], "@"))
-				$newToken['email'] = $params['email'];
+			$toUser = $userStore->createDummyUser();
+			$newToken['userid'] = $toUser;
+			$email = $params['email'];
+			if(strpos($email, "@"))
+			{
+				$newToken['email'] = $email;
+				$newToken['phone'] = "";
+			}
 			else
-				$newToken['phone'] = $params['phone'];
+			{
+				$newToken['email'] = "";
+				$newToken['phone'] = $email;
+			}
 			$newToken['password'] = NULL;
 			$token = $tokenStore->createToken($newToken);
 
-			$params['userid'] = $userId;
 		}
-		else
-		{
-			$userId = $toUser['USER_ID'];
-		}
+		$params['userid'] = $toUser;
 
-		$userStore->increaseBalanceForUserId($userId, $params['amount']);
+		$userStore->increaseBalanceForUserId($toUser, $params['amount']);
 
 		$result = $sendPayment->recordPayment($params);
 

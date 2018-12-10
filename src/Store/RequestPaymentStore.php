@@ -46,6 +46,47 @@ class RequestPaymentStore
 
 	}
 
+	public function completeRequest($requestId)
+	{
+		try{
+			$stmt = $this->db->prepare("UPDATE REQUEST_PAYMENT SET COMPLETED='Y' WHERE REQUEST_ID=:requestId");
+
+
+			$stmt->bindParam(':requestId', $requestId);
+
+			$stmt->execute();
+			return $this->db->lastInsertId();
+
+		} catch (PDOException $e) {
+			print "Error!: " . $e->getMessage() . "<br/>";
+			die();
+		}
+
+		return false;
+
+	}
+
+	public function getRequestsForUserId($userId)
+	{
+		try{
+			$stmt = $this->db->prepare("SELECT * FROM REQUEST_PAYMENT WHERE TO_USERID = :userId AND COMPLETED='N'");
+
+			$stmt->bindParam(':userId', $userId);
+
+			if ($stmt->execute()) {
+				$row = $stmt->fetchAll();
+				return $row;
+			}
+
+		} catch (PDOException $e) {
+			print "Error!: " . $e->getMessage() . "<br/>";
+			die();
+		}
+
+		return false;
+
+	}
+
 	public function recordPayment($params)
 	{
 		try{
