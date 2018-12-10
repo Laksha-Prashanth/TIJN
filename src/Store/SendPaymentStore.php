@@ -23,7 +23,7 @@ class SendPaymentStore
 
 	}
 
-	public function transferMoney($params)
+	public function recordPayment($params)
 	{
 		try{
 			$stmt = $this->db->prepare("INSERT INTO SEND_PAYMENT (TO_USERID, FROM_TOKEN_ID, AMOUNT, MEMO, IS_CANCELLED) values(:userId, :tokenId, :amount, :memo, :isCancelled)");
@@ -31,7 +31,7 @@ class SendPaymentStore
 			$params['isCancelled'] = 'N';
 
 			$stmt->bindParam(':userId', $params['userid']);
-			$stmt->bindParam(':tokenId', $params['tokenid']);
+			$stmt->bindParam(':tokenId', $params['fromTokenid']);
 			$stmt->bindParam(':amount', $params['amount']);
 			$stmt->bindParam(':memo', $params['memo']);
 			$stmt->bindParam(':isCancelled', $params['isCancelled']);

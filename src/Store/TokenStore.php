@@ -14,7 +14,7 @@ class TokenStore
 	function __construct()
 	{
 		try {
-			$dbh = new PDO('mysql:host=127.0.0.1;dbname=tijn', $this->username, $this->pass);
+			$dbh = new PDO('mysql:host=127.0.0.1;dbname=TIJN', $this->username, $this->pass);
 			$this->db = $dbh;
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
@@ -52,10 +52,35 @@ class TokenStore
 
 	}
 
+	public function getUserIdForEmailPhone($email, $phone)
+	{
+		try{
+			$stmt = $this->db->prepare("SELECT USER_ID FROM TOKEN WHERE EMAIL=:email OR PHONE=:phone");
+
+			$stmt->bindParam(':email', $email);
+			$stmt->bindParam(':phone', $phone);
+
+
+			if ($stmt->execute()) {
+				$row = $stmt->fetch();
+				if ($row) {
+					return $row;
+				}
+			}
+
+		} catch (PDOException $e) {
+			print "Error!: " . $e->getMessage() . "<br/>";
+			die();
+		}
+
+		return false;
+
+	}
+
 	public function createToken($params)
 	{
 		try {
-			$stmt = $this->db->prepare("INSERT INTO TOKEN (USER_ID, EMAIL,PHONE_NUMBER, PASSWORD) VALUES (:userid, :email, :phone, :password);");
+			$stmt = $this->db->prepare("INSERT INTO TOKEN (USER_ID, EMAIL,PHONE, PASSWORD) VALUES (:userid, :email, :phone, :password);");
 
 			$stmt->bindParam(':userid', $params['userid']);
 			$stmt->bindParam(':email', $params['email']);

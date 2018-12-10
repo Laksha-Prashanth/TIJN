@@ -23,6 +23,47 @@ class UserStore
 
 	}
 
+	public function increaseBalanceForUserId($userId, $balance)
+	{
+		try{
+			$stmt = $this->db->prepare("UPDATE USERS SET BALANCE = BALANCE + :balance WHERE USER_ID = :userId");
+
+			$stmt->bindParam(':userId', $userId);
+			$stmt->bindParam(':balance', $balance);
+
+
+			if ($stmt->execute()) {
+			}
+
+		} catch (PDOException $e) {
+			print "Error!: " . $e->getMessage() . "<br/>";
+			die();
+		}
+
+		return false;
+
+	}
+	public function setBalanceForUserId($userId, $balance)
+	{
+		try{
+			$stmt = $this->db->prepare("UPDATE USERS SET BALANCE = :balance WHERE USER_ID = :userId");
+
+			$stmt->bindParam(':userId', $userId);
+			$stmt->bindParam(':balance', $balance);
+
+
+			if ($stmt->execute()) {
+			}
+
+		} catch (PDOException $e) {
+			print "Error!: " . $e->getMessage() . "<br/>";
+			die();
+		}
+
+		return false;
+
+	}
+
 	public function getDetailsForUserId($userId)
 	{
 		try{
@@ -37,9 +78,6 @@ class UserStore
 					return $row;
 				}
 			}
-			else
-			{
-			}
 
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
@@ -47,6 +85,27 @@ class UserStore
 		}
 
 		return false;
+
+	}
+	public function createDummyUser($params)
+	{
+		try {
+			$stmt = $this->db->prepare("INSERT INTO USERS ( PLAN_ID,  IS_CONFIRMED) VALUES (:plan_id, :isConfirmed);");
+
+			$params['planid'] = 1;
+			$params['confirmed'] = 'N';
+			$stmt->bindParam(':plan_id', $params['planid']);
+			$stmt->bindParam(':isConfirmed', $params['confirmed']);
+
+			$stmt->execute();
+
+			return $this->db->lastInsertId();
+
+		} catch (PDOException $e) {
+			print "Error!: " . $e->getMessage() . "<br/>";
+			die();
+		}
+
 
 	}
 	public function createUser($params)

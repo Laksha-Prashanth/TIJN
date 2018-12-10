@@ -6,6 +6,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use App\Store\SendPaymentStore;
+use App\Store\UserStore;
+use App\Store\TokenStore;
 
 
 /**
@@ -33,10 +35,44 @@ class UserController extends AbstractController
 	{
 		$params = $request->request->all();
 		$sendPayment = new SendPaymentStore();
+		$userStore = new UserStore();
+		$tokenStore = new TokenStore();
 
-		$result = $sendPayment->transferMoney($params);
+		$toUser = $tokenStore->getUserIdForEmailPhone($params['email'], $params['phone']);
 
-		return $this->redirectToRoute("app_home_user", array('userid' => $params['userid'], 'tokenid' => $params['tokenid']));
+		if(!$toUser)
+		{
+			//creating new user
+			$userId = $userStore->createDummyUser($params);
+			$newToken['userid'] = $userId;
+			$newToken['email'] = $params['email'];
+			$newToken['phone'] = $params['phone'];
+			$newToken['password'] = NULL;
+			$token = $tokenStore->createToken($newToken);
+
+			$params['userid'] = $userId;
+		}
+		else
+		{
+			$userId = $toUser['USER_ID'];
+		}
+
+		$userStore->increaseBalanceForUserId($userId, $params['amount']);
+
+		$result = $sendPayment->recordPayment($params);
+
+		$userDetails = $userStore->getDetailsForUserId($params['fromUserid']);
+		$amount = $userDetails['BALANCE'];
+
+		if($amount - $params['amount'] < 0)
+			$amount = 0;
+		else
+			$amount =  $amount - $params['amount'];
+
+		$userStore->setBalanceForUserId($userDetails['USER_ID'], $amount);
+
+		return $this->redirectToRoute("app_home_user", array('userid' => $params['fromUserid'], 'tokenid' => $params['fromTokenid']));
 	}
 
 }
+
