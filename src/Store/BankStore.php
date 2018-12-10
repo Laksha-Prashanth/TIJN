@@ -57,7 +57,11 @@ class BankStore
 
 			$stmt->execute();
 
-			return $this->db->lastInsertId();
+			$stmt = $this->db->prepare("UPDATE BANK_ACCOUNT SET IS_PRIMARY ='N' WHERE USER_ID=:userId and ACCOUNT_NUMBER != :acnumber");
+			$stmt->bindParam(':userId', $params['userid']);
+			$stmt->bindParam(':acnumber', $params['acnumber']);
+
+			$stmt->execute();
 
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
@@ -76,7 +80,6 @@ class BankStore
 			$stmt->bindParam(':userId', $params['userid']);
 			$stmt->bindParam(':primary', $params['primary']);
 			$stmt->bindParam(':verified', $params['verified']);
-
 			$stmt->execute();
 
 			return $this->db->lastInsertId();

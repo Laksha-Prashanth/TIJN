@@ -41,7 +41,11 @@
 	<div class="row">
 		<div class="col-md-12">
 			{% if isConfirmed == 'N' %}
-			<div class="text-center"> <button type="button" class="btn btn-outline-danger">You have not confirmed your email / phone. Click here to confirm it</button> </div>
+			<form action="user/confirmEmail" method="post">
+					<input type="text" name="userid" class="form-control"style="display:none" value="{{ userId }}">
+					<input type="text" name="tokenid" class="form-control"style="display:none" value="{{ tokenId }}">
+				<div class="text-center"> <button type="submit" class="btn btn-outline-danger">You have not confirmed your email / phone. Click here to confirm it</button> </div>
+			</form>
 			{% endif %}
 			<h5 style="color:green">Account Balance: $ {{ balance }}</h5>
 		</div>
@@ -66,6 +70,7 @@
 								<form action="bank/setPrimary" method="post"> 
 									<div class="form-group" style="display:none">
 										<input type="text" name="userid" class="form-control" id="userId" aria-describedby="emailHelp" style="display:none" placeholder="Phone" value="{{ userId }}">
+										<input type="text" name="tokenid" class="form-control" id="userId" aria-describedby="emailHelp" style="display:none" placeholder="Phone" value="{{ tokenId }}">
 										<input type="text" name="acnumber" class="form-control" id="userId" aria-describedby="emailHelp" style="display:none" placeholder="Phone" value="{{ account.ACCOUNT_NUMBER }}">
 									</div>
 									<button type="submit" class="btn btn-outline-success">set primary</button>
@@ -89,12 +94,12 @@
 					<td>{{ request.MEMO }}</td>
 					<td> 
 						<form action="user/payRequest" method="post"> 
-								<input type="text" name="requestId" class="form-control"  aria-describedby="emailHelp" style="display:none"  value="{{ request.REQUEST_ID }}">
-								<input type="text" name="toUserId" class="form-control"  aria-describedby="emailHelp" style="display:none"  value="{{ request.FROM_USERID }}">
-								<input type="text" name="amount" class="form-control" aria-describedby="emailHelp" style="display:none" value="{{ request.AMOUNT }}">
-								<input type="text" name="memo" class="form-control" aria-describedby="emailHelp" style="display:none"  value="{{ request.MEMO }}">
-								<input type="text" name="fromUserid" class="form-control" aria-describedby="emailHelp" style="display:none"  value="{{ request.TO_USERID }}">
-								<input type="text" name="fromTokenid" class="form-control" aria-describedby="emailHelp" style="display:none"  value="{{ tokenId }}">
+							<input type="text" name="requestId" class="form-control"  aria-describedby="emailHelp" style="display:none"  value="{{ request.REQUEST_ID }}">
+							<input type="text" name="toUserId" class="form-control"  aria-describedby="emailHelp" style="display:none"  value="{{ request.FROM_USERID }}">
+							<input type="text" name="amount" class="form-control" aria-describedby="emailHelp" style="display:none" value="{{ request.AMOUNT }}">
+							<input type="text" name="memo" class="form-control" aria-describedby="emailHelp" style="display:none"  value="{{ request.MEMO }}">
+							<input type="text" name="fromUserid" class="form-control" aria-describedby="emailHelp" style="display:none"  value="{{ request.TO_USERID }}">
+							<input type="text" name="fromTokenid" class="form-control" aria-describedby="emailHelp" style="display:none"  value="{{ tokenId }}">
 							<button type="submit" class="btn btn-outline-success">Pay</button>
 						</form>
 					</td>

@@ -54,7 +54,19 @@ class UserController extends AbstractController
 		return $this->transferMoney($request);
 
 	}
+	/**
+	 *  @Route("/confirmEmail")
+	 */
+	public function confirmEmail(Request $request)
+	{
+		$params = $request->request->all();
+		$tokenStore = new TokenStore();
 
+		$tokenStore->verifyToken($params['tokenid']);
+		
+
+		return $this->redirectToRoute("app_home_user", array('userid' => $params['userid'], 'tokenid' => $params['tokenid']));
+	}
 	/**
 	 *  @Route("/statements")
 	 */
@@ -64,8 +76,11 @@ class UserController extends AbstractController
 		$sendPaymentStore = new SendPaymentStore();
 		$requestStore = new RequestPaymentStore();
 
-		$params['start'] = "2018-".$params['start']."-00";
-		$params['end'] = "2018-".$params['end']."-31";
+		if(!array_key_exists('start',$params))
+		{
+			$params['start'] = date('Y')."-".date('m')."-00";
+			$params['end'] = date('Y')."-".date('m')."-31";
+		}
 
 		$result = $sendPaymentStore->getStatementForMonth($params);
 

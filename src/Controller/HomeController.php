@@ -33,10 +33,12 @@ class HomeController extends AbstractController
 	{
 		$params = $request->query->all();
 		$userStore = new UserStore();
+		$tokenStore = new TokenStore();
 		$bankStore = new BankStore();
 		$requestStore = new RequestPaymentStore();
 
 		$userDetails = $userStore->getDetailsForUserId($params['userid']);
+		$tokenDetails = $tokenStore->getDetailsForTokenId($params['tokenid']);
 		$bankDetails = $bankStore->getDetailsforUserId($params['userid']);
 		$requestDetails = $requestStore->getRequestsForUserId($params['userid']);
 
@@ -55,7 +57,7 @@ class HomeController extends AbstractController
 			'balance' => $userDetails['BALANCE'],
 			'ssn' => $userDetails['SSN'],
 			'plan' => $userDetails['PLAN_ID'],
-			'isConfirmed' => $userDetails['IS_CONFIRMED'],
+			'isConfirmed' => $tokenDetails['IS_VERIFIED_TOKEN'],
 			'bankAccounts' => $bankDetails,
 			'requests' => $requestDetails,
 		]);

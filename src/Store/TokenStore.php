@@ -29,7 +29,7 @@ class TokenStore
 			$stmt = $this->db->prepare("SELECT * FROM TOKEN WHERE (EMAIL=:email OR PHONE=:phone) AND PASSWORD=:password");
 
 			$stmt->bindParam(':email', $params['email']);
-			$stmt->bindParam(':phone', $params['phone']);
+			$stmt->bindParam(':phone', $params['email']);
 			$stmt->bindParam(':password', $params['password']);
 
 
@@ -41,6 +41,30 @@ class TokenStore
 			}
 			else
 			{
+			}
+
+		} catch (PDOException $e) {
+			print "Error!: " . $e->getMessage() . "<br/>";
+			die();
+		}
+
+		return false;
+
+	}
+
+	public function getDetailsForTokenId($tokenId)
+	{
+		try{
+			$stmt = $this->db->prepare("SELECT * FROM TOKEN WHERE TOKEN_ID=:tokenId");
+
+			$stmt->bindParam(':tokenId', $tokenId);
+
+
+			if ($stmt->execute()) {
+				$row = $stmt->fetch();
+				if ($row) {
+					return $row;
+				}
 			}
 
 		} catch (PDOException $e) {
@@ -77,12 +101,32 @@ class TokenStore
 
 	}
 
+	public function verifyToken($tokenId)
+	{
+		try {
+			$stmt = $this->db->prepare("UPDATE TOKEN SET IS_VERIFIED_TOKEN='Y' WHERE TOKEN_ID=:tokenId");
+
+			$stmt->bindParam(':tokenId', $tokenId);
+
+			$stmt->execute();
+			return $this->db->lastInsertId();
+
+		} catch (PDOException $e) {
+			print "Error!: " . $e->getMessage() . "<br/>";
+			die();
+		}
+
+
+	}
+
 	public function createToken($params)
 	{
 		try {
-			$stmt = $this->db->prepare("INSERT INTO TOKEN (USER_ID, EMAIL,PHONE, PASSWORD) VALUES (:userid, :email, :phone, :password);");
+			$stmt = $this->db->prepare("INSERT INTO TOKEN (USER_ID, EMAIL,PHONE, IS_VERIFIED_TOKEN, PASSWORD) VALUES (:userid, :email, :phone, :isVerified, :password);");
 
+			$params['isVerified'] = 'N';
 			$stmt->bindParam(':userid', $params['userid']);
+			$stmt->bindParam(':isVerified', $params['isVerified']);
 			$stmt->bindParam(':email', $params['email']);
 			$stmt->bindParam(':phone', $params['phone']);
 			$stmt->bindParam(':password', $params['password']);

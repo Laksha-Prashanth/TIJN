@@ -52,7 +52,7 @@ class BankController extends AbstractController
 
 		$result = $bankStore->setPrimary($params);
 
-		return $this->redirectToRoute("app_home_user", array('userid' => $params['userid']));
+		return $this->redirectToRoute("app_home_user", array('userid' => $params['userid'], 'tokenid' => $params['tokenid']));
 	}
 
 
