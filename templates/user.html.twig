@@ -16,7 +16,13 @@
 <div class="container">
 	<div class="row">
 		<div class="col-md-6">
-			<button type="button" class="btn btn-primary btn-lg btn-block">Send Money</button>
+			<form action="user/sendMoney" method="post">
+					<div class="form-group" style="display:none">
+						<input type="text" name="userid" class="form-control"style="display:none" value="{{ userId }}">
+						<input type="text" name="tokenid" class="form-control"style="display:none" value="{{ tokenId }}">
+					</div>
+				<button type="submit" class="btn btn-primary btn-lg btn-block">Send Money</button>
+			</form>
 		</div>
 		<div class="col-md-6">
 			<button type="button" class="btn btn-primary btn-lg btn-block">Request Money</button>
@@ -34,7 +40,38 @@
 		</div>
 	</div>
 	<div class="row" style="margin-top:3%">
-		<div class="col-md-12">
+		<div class="col-md-8">
+			<h4>Bank Accounts</h4>
+			<div class=""> 
+				<form action="bank/addAccount" method="post">
+					<div class="form-group">
+						<input type="text" name="userid" class="form-control" id="userId" aria-describedby="emailHelp" style="display:none" placeholder="Phone" value="{{ userId }}">
+					</div>
+					<button type="submit" class="btn btn-success">Click here to add a bank account</button>
+				</form> 
+			</div>
+			{% if bankAccounts %}
+			<table class="table">
+				<tr><th>Account Number</th><th>Primary</th><th>Verified</th><tr>
+						{% for account in bankAccounts %}
+						<tr {%if account.IS_PRIMARY == 'Y' %} class="table-success" {% endif %}><td>{{ account.ACCOUNT_NUMBER }}</td>
+							<td>{%if account.IS_PRIMARY == 'N' %}
+								<form action="bank/setPrimary" method="post"> 
+									<div class="form-group" style="display:none">
+										<input type="text" name="userid" class="form-control" id="userId" aria-describedby="emailHelp" style="display:none" placeholder="Phone" value="{{ userId }}">
+										<input type="text" name="acnumber" class="form-control" id="userId" aria-describedby="emailHelp" style="display:none" placeholder="Phone" value="{{ account.ACCOUNT_NUMBER }}">
+									</div>
+									<button type="submit" class="btn btn-outline-success">set primary</button>
+								</form>
+								{% endif %}</td>
+							<td>{%if account.IS_VERIFIED=='Y' %} Yes {% else %} No {% endif %}</tr>
+						{% endfor %}
+			</table>
+			{% else %}
+			<p> You don't have any bank accounts! </p>
+			{% endif %}
+		</div>
+		<div class="col-md-4">
 			<h4 style="">Your Summary</h4>
 			<table class="table table-borderless">
 				<tr>

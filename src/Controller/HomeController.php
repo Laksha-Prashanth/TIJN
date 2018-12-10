@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use App\Store\UserStore;
 use App\Store\TokenStore;
+use App\Store\BankStore;
 
 
 /**
@@ -31,19 +32,24 @@ class HomeController extends AbstractController
 	{
 		$params = $request->query->all();
 		$userStore = new UserStore();
+		$bankStore = new BankStore();
 
 		$userDetails = $userStore->getDetailsForUserId($params['userid']);
+		$bankDetails = $bankStore->getDetailsforUserId($params['userid']);
 
 
 
 
 		return $this->render('user.html.twig', [
+			'userId' => $userDetails['USER_ID'],
+			'tokenId' => $params['tokenid'],
 			'firstName' => $userDetails['FIRST_NAME'],
 			'lastName' => $userDetails['LAST_NAME'],
 			'balance' => $userDetails['BALANCE'],
 			'ssn' => $userDetails['SSN'],
 			'plan' => $userDetails['PLAN_ID'],
 			'isConfirmed' => $userDetails['IS_CONFIRMED'],
+			'bankAccounts' => $bankDetails,
 		]);
 
 	}
@@ -59,11 +65,11 @@ class HomeController extends AbstractController
 		$login['email'] = $params['email'];
 		$login['password'] = $params['password'];
 
-		$userId = $tokenStore->login($login);
+		$result = $tokenStore->login($login);
 
 		if($tokenStore->login($login))
 		{
-			return $this->redirectToRoute("app_home_user", array('userid' => $userId));
+			return $this->redirectToRoute("app_home_user", array('userid' => $result['USER_ID'], 'tokenid' => $result['TOKEN_ID']));
 		}
 		else
 		{

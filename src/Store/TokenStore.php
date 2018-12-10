@@ -36,7 +36,7 @@ class TokenStore
 			if ($stmt->execute()) {
 				$row = $stmt->fetch();
 				if ($row) {
-					return $row['USER_ID'];
+					return $row;
 				}
 			}
 			else
