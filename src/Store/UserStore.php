@@ -14,7 +14,7 @@ class UserStore
 	function __construct()
 	{
 		try {
-			$dbh = new PDO('mysql:host=127.0.0.1;dbname=tijn', $this->username, $this->pass);
+			$dbh = new PDO('mysql:host=127.0.0.1;dbname=TIJN', $this->username, $this->pass);
 			$this->db = $dbh;
 		} catch (PDOException $e) {
 			print "Error!: " . $e->getMessage() . "<br/>";
@@ -87,7 +87,7 @@ class UserStore
 		return false;
 
 	}
-	public function createDummyUser($params)
+	public function createDummyUser()
 	{
 		try {
 			$stmt = $this->db->prepare("INSERT INTO USERS ( PLAN_ID,  IS_CONFIRMED) VALUES (:plan_id, :isConfirmed);");

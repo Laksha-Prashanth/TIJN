@@ -25,7 +25,13 @@
 			</form>
 		</div>
 		<div class="col-md-6">
-			<button type="button" class="btn btn-primary btn-lg btn-block">Request Money</button>
+			<form action="user/requestMoney" method="post">
+				<div class="form-group" style="display:none">
+					<input type="text" name="userid" class="form-control"style="display:none" value="{{ userId }}">
+					<input type="text" name="tokenid" class="form-control"style="display:none" value="{{ tokenId }}">
+				</div>
+				<button type="submit" class="btn btn-primary btn-lg btn-block">Request Money</button>
+			</form>
 		</div>
 	</div>
 </div>
