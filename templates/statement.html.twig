@@ -33,7 +33,7 @@
 			<table class="table">
 				<tr><th>From</th><th>To</th><th>Date</th><th>Amount</th><th>Memo</th></tr>
 				{% for row in statement %}
-				<tr class="">
+				<tr {% if row.FROM_USERID == userId %}class="table-warning"{%else%} class="table-success" {% endif %}>
 					<td>{{ row.FROM_USERID }}</td>
 					<td>{{ row.TO_USERID }}</td>
 					<td>{{ row.PAYMENT_TIME }}</td>
